@@ -7,7 +7,10 @@ function pipewire_check() {
         version=$(pipewire --version | awk 'NR==2 {print $4}')
         echo "Pipewire is installed, version $version"
     else
+        # Hides error message
+        2> /dev/null
         echo "Pipewire is not installed."
+        exit 1
     fi
 }
 pipewire_check
