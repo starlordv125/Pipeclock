@@ -13,4 +13,21 @@ function pipewire_check() {
         exit 1
     fi
 }
+
+function file_check() {
+    if [ ! -d "$HOME/.config" ]; then
+        mkdir "$HOME/.config"
+    fi
+
+    if [ ! -d "$HOME/.config/pipewire" ]; then
+        mkdir "$HOME/.config/pipewire"
+    fi
+
+    if [ -f "$HOME/.config/pipewire/pipewire.conf" ]; then
+        echo "WORKS"
+    else
+        touch "$HOME/.config/pipewire/pipewire.conf"
+    fi
+}
 pipewire_check
+file_check
