@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# Pipeclock, a program that changes pipewire's allowed clock rates
+#Copyright (C) 2025  Cameron Reynolds
+
+    #This program is free software: you can redistribute it and/or modify
+    #it under the terms of the GNU General Public License as published by
+    #the Free Software Foundation, either version 3 of the License, or
+    #(at your option) any later version.
+
+    #This program is distributed in the hope that it will be useful,
+    #but WITHOUT ANY WARRANTY; without even the implied warranty of
+    #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    #GNU General Public License for more details.
+
+    #You should have received a copy of the GNU General Public License
+    #along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 pcVersion="0.2-alpha" 
 # Function that checks for pipewire installation
 function pipewire_check() {
@@ -145,8 +161,3 @@ folder_make
 make_conf
 systemctl --user restart pipewire pipewire-pulse
 echo "Done! Thanks for using Pipeclock!"
-#if [ ! -e "$HOME/.config/pipewire/pipewire.conf.d/clock.conf" ]; then
-#    make_conf
-#elif [ -e "$HOME/.config/pipewire/pipewire.conf.d/clock.conf" ]; then
-#    edit_conf
-#fi
