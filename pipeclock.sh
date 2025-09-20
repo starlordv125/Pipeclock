@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pcVersion="0.1-alpha" 
+pcVersion="0.2-alpha" 
 # Function that checks for pipewire installation
 function pipewire_check() {
     # Checks for pipewire installation
@@ -15,6 +15,7 @@ function pipewire_check() {
     fi
 }
 
+# This checks and makes the necessary folders for Pipeclock to run
 function folder_make() {
     echo "Making Pipewire config folder"
     if [ ! -d "$HOME/.config" ]; then
@@ -30,12 +31,6 @@ function folder_make() {
     fi
 }
 
-function make_conf() {
-    echo 
-    touch clock.conf
-
-}
-
 function clock_preferences() {
     echo -e "Welcome to Pipeclock v$pcVersion!"
     while true; do
@@ -47,6 +42,7 @@ function clock_preferences() {
 5. 192000
 ** (1-5, 0 to abort) **
 "
+        # read is like input() on python, accepts input
         read minClock
         if [ "$minClock" -eq "0" ]; then
             echo -e "\nExiting Pipeclock v$pcVersion"
@@ -106,9 +102,49 @@ function clock_preferences() {
     echo -e "\nYou have chosen $maxClock as your maximum clock rate"
 }
 
+function find_rates() {
+    if (( $minClock == $maxClock )); then
+        clockRate=$maxClock
+    fi
+    if (( $minClock < $maxClock )); then
+        clockRate=$minClock
+        if (( $maxClock >= 48000 && $minClock < 48000 )); then
+            clockRate="$clockRate ,48000"
+        fi
+        if (( $maxClock >= 88200 && $minClock < 82000 )); then
+            clockRate="$clockRate ,88200"
+        fi
+        if (( $maxClock >= 96000 && $minClock < 96000 )); then
+            clockRate="$clockRate ,96000"
+        fi
+        if (( $maxClock == 192000 )); then
+            clockRate="$clockRate ,192000"
+        fi
+    fi
+    # Error handling
+    if (( $minClock > $maxClock )); then
+        echo "Incorrect values selected, aborting..."
+        exit 1
+    fi
+}
+
+function make_conf() {
+    echo "Making configuration file"
+    touch "$HOME/.config/pipewire/pipewire.conf.d/clock.conf"
+    cat <<EOF > "$HOME/.config/pipewire/pipewire.conf.d/clock.conf"
+context.properties {
+    default.clock.allowed-rates = [ $clockRate ]
+}
+EOF
+}
+
 pipewire_check
 clock_preferences
+find_rates
 folder_make
+make_conf
+systemctl --user restart pipewire pipewire-pulse
+echo "Done! Thanks for using Pipeclock!"
 #if [ ! -e "$HOME/.config/pipewire/pipewire.conf.d/clock.conf" ]; then
 #    make_conf
 #elif [ -e "$HOME/.config/pipewire/pipewire.conf.d/clock.conf" ]; then
