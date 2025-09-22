@@ -50,14 +50,13 @@ function folder_make() {
 function clock_preferences() {
     echo -e "Welcome to Pipeclock v$pcVersion!"
     while true; do
-        echo -e "\nPlease select minimum clock speed"
+        echo -e "Please select minimum clock rate"
         echo "1. 44100
 2. 48000
 3. 88200
 4. 96000
 5. 192000
-** (1-5, 0 to abort) **
-"
+** (1-5, 0 to abort) **"
         # read is like input() on python, accepts input
         read minClock
         if [ "$minClock" -eq "0" ]; then
@@ -84,14 +83,13 @@ function clock_preferences() {
     done
     echo -e "\nYou have chosen $minClock as your minimum clock rate"
     while true; do
-        echo -e "\nPlease select maximum clock speed"
+        echo -e "Please select maximum clock rate"
         echo "1. 44100
 2. 48000
 3. 88200
 4. 96000
 5. 192000
-** (1-5, 0 to abort) **
-"
+** (1-5, 0 to abort) **"
         read maxClock
         if [ "$maxClock" -eq "0" ]; then
             echo -e "\nExiting Pipeclock v$pcVersion"
@@ -158,6 +156,12 @@ pipewire_check
 clock_preferences
 find_rates
 folder_make
-make_conf
-systemctl --user restart pipewire pipewire-pulse
+if [ -e "$HOME/.config/pipewire/pipewire.conf.d/clock.conf" ]; then
+    rm "$HOME/.config/pipewire/pipewire.conf.d/clock.conf"
+    make_conf
+else
+    make_conf
+fi
+# Not everyone uses systemd - figure out later
+#systemctl --user restart pipewire pipewire-pulse
 echo "Done! Thanks for using Pipeclock!"
